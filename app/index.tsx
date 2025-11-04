@@ -1,11 +1,12 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ImageBackground, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
-export default function Index() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+// Cheia principală pentru stocarea datelor
+const STORAGE_KEY = "APP_DATA";
 
+<<<<<<< Updated upstream
   const handleLogin = () => {
     if (username === "" && password === "") {
       router.replace("../../project/manager/pages-manager/manager-log-page"); // navighează la Manager
@@ -15,7 +16,61 @@ export default function Index() {
     else if (username === "worker" && password === "worker") {
       router.replace("../../project/worker/pages-worker/worker-log-page"); // navighează la Șef Departament
     } else {
+=======
+// Funcții pentru AsyncStorage
+const initData = async () => {
+  const data = await AsyncStorage.getItem(STORAGE_KEY);
+  if (!data) {
+    const initialData = {
+      users: [
+        { username: "manager", password: "manager", role: "manager" },
+        { username: "departmentMec", password: "departmentMec", role: "bossDesignMecanic" },
+        { username: "worker", password: "worker", role: "workerDesignMecanic" },
+      ],
+      projects: [],
+      tasks: [],
+    };
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(initialData));
+    return initialData;
+  }
+  return JSON.parse(data);
+};
+
+const getData = async () => {
+  const data = await AsyncStorage.getItem(STORAGE_KEY);
+  return data ? JSON.parse(data) : await initData();
+};
+
+export default function Index() {
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+
+  // Opțional: inițializează storage la mount
+  useEffect(() => {
+    initData();
+  }, []);
+
+  const handleLogin = async () => {
+    const data = await getData();
+    const user = data.users.find(
+      (u: any) => u.username === username && u.password === password
+    );
+
+    if (!user) {
+>>>>>>> Stashed changes
       alert("Username sau parola greșită!");
+      return;
+    }
+
+    // Navigare în funcție de rol
+    if (user.role === "manager") {
+      router.replace("./manager");
+    } else if (user.role.includes("bossDesignMecanic")) {
+      router.replace("./DepBoss");
+    } else if (user.role.includes("worker")) {
+      router.replace("./WorkerPage");
+    } else {
+      alert("Rol necunoscut!");
     }
   };
 
@@ -69,7 +124,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   card: {
-    width: "100%",
+    width: "90%",
     backgroundColor: "rgba(255,255,255,0.9)",
     borderRadius: 16,
     padding: 30,
