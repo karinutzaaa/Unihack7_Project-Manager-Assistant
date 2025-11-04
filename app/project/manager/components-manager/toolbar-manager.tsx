@@ -12,25 +12,31 @@ export default function Toolbar() {
 }
 
 const styles = StyleSheet.create({
-  toolbar: {
+  toolbarContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 18,
-    paddingVertical: 14,
-    backgroundColor: "#1b18b6",
-    boxShadow: "0px 2px 8px rgba(0,0,0,0.10)",
+    paddingVertical: 12,
+    borderBottomWidth: 0,
+    borderBottomColor: "rgba(255,255,255,0.15)",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
   },
   appName: {
     color: "#fff",
-    fontWeight: "600",
-    fontSize: 25,
+    fontWeight: "700",
+    fontSize: 20,
+    letterSpacing: 0.5,
   },
   profileImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    borderColor: "#fff",
-    borderWidth: 1.5,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    borderWidth: 2,
+    borderColor: "rgba(255,255,255,0.8)",
   },
 });
