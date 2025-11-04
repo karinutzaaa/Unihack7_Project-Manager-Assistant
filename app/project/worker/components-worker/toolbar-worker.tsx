@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import BurgerMenu from "./BurgerMenu"; // importăm componenta globală
 
 export default function Toolbar() {
@@ -25,10 +25,8 @@ export default function Toolbar() {
             router.push("/project/worker/pages-worker/user-profile-worker")
           }
         >
-          <Image
-            source={require("../../../../assets/user.png")}
-            style={styles.profileImage}
-          />
+          
+          
         </TouchableOpacity>
       </View>
 

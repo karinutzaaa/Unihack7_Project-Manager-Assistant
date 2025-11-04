@@ -9,6 +9,7 @@ export default function Toolbar() {
       <Ionicons name="menu-outline" size={28} color="#fff" />
       <Text style={styles.appName}>Department Boss Assistant</Text>
       <TouchableOpacity onPress={() => router.push({ pathname: "/project/pages/user-profile-page" } as any)}>
+        
          </TouchableOpacity>
     </View>
   );

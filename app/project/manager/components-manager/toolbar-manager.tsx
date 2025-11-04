@@ -1,16 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
 import React from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 export default function Toolbar() {
   return (
     <View style={styles.toolbar}>
       <Ionicons name="menu-outline" size={28} color="#fff" />
       <Text style={styles.appName}>Project Manager Assistant</Text>
-      <TouchableOpacity onPress={() => router.push({ pathname: "/project/manager/pages-manager/user-profile-manager" } as any)}>
-        <Image source={require("../../../../assets/user.png")} style={styles.profileImage} />
-      </TouchableOpacity>
     </View>
   );
 }

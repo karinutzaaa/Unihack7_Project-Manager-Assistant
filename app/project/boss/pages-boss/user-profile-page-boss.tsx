@@ -7,7 +7,6 @@ import React, { useEffect, useState } from "react";
 import {
   Alert,
   Dimensions,
-  Image,
   Modal,
   SafeAreaView,
   ScrollView,
@@ -15,7 +14,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 
 const STORAGE_KEY = "@pma_user_v1";
@@ -70,42 +69,9 @@ export default function ProjectUserPage() {
       {/* Content */}
       <ScrollView contentContainerStyle={{ paddingBottom: 160 }}>
         <View style={styles.profileCard}>
-          <Image source={require("../../../../assets/user.png")} style={styles.avatar} />
+          
 
-          <Text style={styles.userName}>{user?.name}</Text>
-          <Text style={styles.userRank}>{user?.rank}</Text>
-
-          <View style={styles.statsRow}>
-            <View style={styles.statBox}>
-              <Text style={styles.statValue}>12</Text>
-              <Text style={styles.statLabel}>Projects</Text>
-            </View>
-            <View style={styles.statBox}>
-              <Text style={styles.statValue}>34</Text>
-              <Text style={styles.statLabel}>Tasks</Text>
-            </View>
-            <View style={styles.statBox}>
-              <Text style={styles.statValue}>92%</Text>
-              <Text style={styles.statLabel}>Completion</Text>
-            </View>
           </View>
-
-          <View style={styles.infoCard}>
-            <Text style={styles.infoLabel}>Email</Text>
-            <Text style={styles.infoValue}>{user?.email}</Text>
-
-            <Text style={styles.infoLabel}>Password</Text>
-            <Text style={styles.infoValue}>{user?.password ? "••••••••" : "Not set"}</Text>
-
-            <Text style={styles.infoLabel}>Rank</Text>
-            <Text style={styles.infoValue}>{user?.rank}</Text>
-          </View>
-
-          <TouchableOpacity style={styles.editButton} onPress={() => setEditing(true)}>
-            <Ionicons name="create-outline" size={18} color="#fff" style={{ marginRight: 6 }} />
-            <Text style={styles.editButtonText}>Edit Profile</Text>
-          </TouchableOpacity>
-        </View>
       </ScrollView>
 
       {/* Edit Modal */}
