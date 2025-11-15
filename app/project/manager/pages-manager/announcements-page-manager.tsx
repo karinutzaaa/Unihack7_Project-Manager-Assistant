@@ -4,6 +4,7 @@ import { router } from "expo-router";
 import React, { useState } from "react";
 import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import BurgerMenu from "./burger-menu-manager";
+import NotificationManager from "./notification-manager"; // import notificări
 
 export default function AnnouncementsPage() {
   const [open, setOpen] = useState(false);
@@ -21,6 +22,12 @@ export default function AnnouncementsPage() {
     { id: "2", title: "Holiday Schedule", description: "The office will be closed on December 25th and January 1st.", date: "2025-11-10", important: false },
     { id: "3", title: "Team Building Event", description: "Join us for a fun team-building day at the local park.", date: "2025-11-20", important: true },
     { id: "4", title: "System Maintenance", description: "Scheduled maintenance will occur on November 18th.", date: "2025-11-12", important: false },
+  ];
+
+  // Notificări sample
+  const notifications: { id: string; title: string; message: string; type: "info" | "meeting" | "success"; time: string }[] = [
+    { id: "1", title: "New Announcement", message: "New Safety Protocols added", type: "info", time: "1h ago" },
+    { id: "2", title: "Holiday Alert", message: "Holiday Schedule updated", type: "info", time: "2h ago" },
   ];
 
   return (
@@ -44,18 +51,23 @@ export default function AnnouncementsPage() {
 
           <TouchableOpacity
             style={styles.iconButton}
-            onPress={() => router.push("/project/manager/pages-manager/manager-log-page")}
+            onPress={() => router.push("/project/manager/pages-manager/community-hub-manager")}
             activeOpacity={0.8}
           >
             <Ionicons name="arrow-back" size={18} color="#fff" />
           </TouchableOpacity>
-
         </View>
 
-        <TouchableOpacity style={styles.iconButton} onPress={() => { }} activeOpacity={0.8}>
-          <Ionicons name="refresh" size={18} color="#fff" />
-        </TouchableOpacity>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <TouchableOpacity style={styles.iconButton} onPress={() => { }} activeOpacity={0.8}>
+            <Ionicons name="refresh" size={18} color="#fff" />
+          </TouchableOpacity>
+
+          {/* Notifications */}
+          <NotificationManager notifications={notifications} />
+        </View>
       </LinearGradient>
+
       {/* OVERLAY PENTRU ÎNCHIDERE BURGER */}
       {open && (
         <TouchableOpacity
@@ -100,7 +112,6 @@ export default function AnnouncementsPage() {
         </View>
       </LinearGradient>
 
-
       {/* CONȚINUT */}
       <ScrollView contentContainerStyle={styles.container}>
         {sampleAnnouncements.map(a => (
@@ -115,7 +126,7 @@ export default function AnnouncementsPage() {
           </View>
         ))}
       </ScrollView>
-    </View >
+    </View>
   );
 }
 
@@ -134,14 +145,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 4,
   },
-  headerContainer: {
-    paddingTop: Platform.OS === "ios" ? 44 : 20,
-    paddingBottom: 20,
-    paddingHorizontal: 18,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-    elevation: 6,
-  },
   headerGradient: {
     paddingTop: Platform.OS === "ios" ? 44 : 20,
     paddingBottom: 18,
@@ -151,11 +154,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     elevation: 6,
   },
-
-  headerBottomRow: {
-    marginTop: 20,
-    alignItems: "center",
-  },
   iconButton: {
     width: 44,
     height: 44,
@@ -164,6 +162,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: 8,
+  },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "transparent",
+    zIndex: 9,
   },
   headerTitle: {
     color: "#fff",
@@ -181,22 +188,6 @@ const styles = StyleSheet.create({
   topKpi: { flex: 1, alignItems: "center" },
   topKpiLabel: { color: "rgba(255,255,255,0.85)", fontSize: 12 },
   topKpiValue: { color: "#fff", fontSize: 16, fontWeight: "800", marginTop: 6 },
-  announcementsText: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#fff",
-    textAlign: "center",
-  },
-  overlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "transparent",
-    zIndex: 9,
-  },
   container: {
     padding: 16,
   },
@@ -215,7 +206,6 @@ const styles = StyleSheet.create({
     borderLeftWidth: 5,
     borderLeftColor: "#EF4444",
   },
-  headerTitleWrap: { flex: 1, paddingHorizontal: 12, alignItems: "center" },
   cardDate: { fontSize: 12, color: "#555" },
   badge: {
     fontSize: 12,

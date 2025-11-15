@@ -3,6 +3,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Image, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 
+
+
 export default function Toolbar() {
   const [open, setOpen] = useState(false);
 

@@ -1,7 +1,7 @@
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 
 type BurgerMenuProps = {
   closeMenu?: () => void;
@@ -28,6 +28,13 @@ export default function BurgerMenu({ closeMenu }: BurgerMenuProps) {
           icon="people-outline"
           label="Community"
           onPress={() => handleNavigation("./community-hub-manager")}
+        />
+
+        {/* NEW: AI Chatbot */}
+        <MenuItem
+          icon="chatbubble-ellipses-outline"
+          label="AI Chatbot"
+          onPress={() => handleNavigation("./assistant-page-manager")}
         />
 
         <View style={styles.separator} />

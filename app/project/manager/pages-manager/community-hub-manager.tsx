@@ -5,15 +5,24 @@ import React, { useState } from "react";
 import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import BurgerMenu from "./burger-menu-manager";
+import NotificationManager from "./notification-manager";
 
 export default function CommunityHub() {
   const [open, setOpen] = useState(false);
 
-  // Date exemplu
-  const project = { name: "Community Hub", description: "Welcome to the community hub" };
-  const progressPercent = 72;
-  const tasks = ["Task 1", "Task 2", "Task 3", "Task 4"];
-  const completedTasks = 2;
+  const project = { name: "Community Hub", description: "Welcome to your community space" };
+
+  // KPI-uri relevante pentru comunitate
+  const totalActivities = 12;
+  const activeMembers = 37;
+  const upcomingEvents = 5;
+
+  // Notificări exemplu
+  const notifications = [
+    { id: "1", title: "New Activity", message: "You have a new activity", type: "info" as const, time: "1h ago" },
+    { id: "2", title: " Meeting Reminder", message: "Team meeting at 14:00", type: "meeting" as const, time: "2h ago" },
+    { id: "3", title: "Event Completed", message: "Hackathon 2025 finished", type: "success" as const, time: "Yesterday" },
+  ];
 
   return (
     <View style={{ flex: 1, backgroundColor: "#F9FAFB" }}>
@@ -25,42 +34,33 @@ export default function CommunityHub() {
         style={styles.toolbarContainer}
       >
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <TouchableOpacity
-            style={styles.iconButton}
-            onPress={() => setOpen(true)}
-            activeOpacity={0.8}
-          >
+          <TouchableOpacity style={styles.iconButton} onPress={() => setOpen(true)}>
             <Ionicons name="menu" size={24} color="#fff" />
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.iconButton}
             onPress={() => router.push("/project/manager/pages-manager/manager-log-page")}
-            activeOpacity={0.8}
           >
             <Ionicons name="arrow-back" size={18} color="#fff" />
           </TouchableOpacity>
-
         </View>
 
-        <TouchableOpacity style={styles.iconButton} onPress={() => { }} activeOpacity={0.8}>
-          <Ionicons name="refresh" size={18} color="#fff" />
-        </TouchableOpacity>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <TouchableOpacity style={styles.iconButton} onPress={() => { }}>
+            <Ionicons name="refresh" size={18} color="#fff" />
+          </TouchableOpacity>
+
+          {/* Notification Manager */}
+          <NotificationManager notifications={notifications} />
+        </View>
       </LinearGradient>
 
-      {/* OVERLAY PENTRU ÎNCHIDERE BURGER */}
-      {open && (
-        <TouchableOpacity
-          style={styles.overlay}
-          activeOpacity={1}
-          onPress={() => setOpen(false)}
-        />
-      )}
-
-      {/* MENIUL BURGER */}
+      {/* OVERLAY BURGER */}
+      {open && <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={() => setOpen(false)} />}
       {open && <BurgerMenu closeMenu={() => setOpen(false)} />}
 
-      {/* HEADER KPI */}
+      {/* HEADER KPI COMMUNITY */}
       <LinearGradient
         colors={["#2962FF", "#4FC3F7"]}
         start={[0, 0]}
@@ -70,18 +70,18 @@ export default function CommunityHub() {
         <Text style={styles.headerTitle}>{project.name}</Text>
         <Text style={styles.headerSubtitle}>{project.description}</Text>
 
-        <View style={styles.topKpiRow}>
-          <View style={styles.topKpi}>
-            <Text style={styles.topKpiLabel}>Progress</Text>
-            <Text style={styles.topKpiValue}>{progressPercent}%</Text>
+        <View style={styles.kpiRow}>
+          <View style={styles.kpiBox}>
+            <Text style={styles.kpiLabel}>Total Activities</Text>
+            <Text style={styles.kpiValue}>{totalActivities}</Text>
           </View>
-          <View style={styles.topKpi}>
-            <Text style={styles.topKpiLabel}>Tasks</Text>
-            <Text style={styles.topKpiValue}>{tasks.length}</Text>
+          <View style={styles.kpiBox}>
+            <Text style={styles.kpiLabel}>Active Members</Text>
+            <Text style={styles.kpiValue}>{activeMembers}</Text>
           </View>
-          <View style={styles.topKpi}>
-            <Text style={styles.topKpiLabel}>Completed</Text>
-            <Text style={styles.topKpiValue}>{completedTasks}</Text>
+          <View style={styles.kpiBox}>
+            <Text style={styles.kpiLabel}>Upcoming Events</Text>
+            <Text style={styles.kpiValue}>{upcomingEvents}</Text>
           </View>
         </View>
       </LinearGradient>
@@ -133,7 +133,6 @@ export default function CommunityHub() {
 }
 
 const styles = StyleSheet.create({
-  /*TOOLBAR*/
   toolbarContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -147,12 +146,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 4,
-  },
-  toolbarTitle: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "700",
-    marginLeft: 12,
   },
   iconButton: {
     width: 44,
@@ -183,10 +176,10 @@ const styles = StyleSheet.create({
   },
   headerTitle: { color: "#fff", fontSize: 22, fontWeight: "800", textAlign: "center" },
   headerSubtitle: { color: "rgba(255,255,255,0.85)", fontSize: 14, marginTop: 6, textAlign: "center" },
-  topKpiRow: { flexDirection: "row", marginTop: 14, justifyContent: "space-between" },
-  topKpi: { flex: 1, alignItems: "center" },
-  topKpiLabel: { color: "rgba(255,255,255,0.85)", fontSize: 12 },
-  topKpiValue: { color: "#fff", fontSize: 16, fontWeight: "800", marginTop: 6 },
+  kpiRow: { flexDirection: "row", marginTop: 14, justifyContent: "space-between" },
+  kpiBox: { flex: 1, alignItems: "center" },
+  kpiLabel: { color: "rgba(255,255,255,0.85)", fontSize: 12 },
+  kpiValue: { color: "#fff", fontSize: 16, fontWeight: "800", marginTop: 6 },
   container: {
     flexDirection: "row",
     flexWrap: "wrap",

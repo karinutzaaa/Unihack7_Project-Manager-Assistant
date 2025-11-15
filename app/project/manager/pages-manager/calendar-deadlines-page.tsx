@@ -12,7 +12,8 @@ export default function CalendarDay() {
     const date = (params.date as string) || undefined;
     const [open, setOpen] = useState(false);
 
-    const projects = useMemo(() => {
+    let projects: { id?: string; name?: string; color?: string; deadline?: string }[] = [];
+    if (params.projects) {
         try {
             if (params.projects) return JSON.parse(decodeURIComponent(String(params.projects)));
         } catch { }

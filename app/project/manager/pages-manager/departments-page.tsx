@@ -1,10 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import BurgerMenu from "./burger-menu-manager";
-import { useState } from "react";
 
 export default function DepartmentsPage() {
   const params = useLocalSearchParams();
@@ -20,7 +19,7 @@ export default function DepartmentsPage() {
     { id: "3", name: "Carla" },
   ];
 
-  let incomingProjects: Array<any> = [];
+  let incomingProjects: any[] = [];
   try {
     if (params.projects) {
       const parsed = JSON.parse(decodeURIComponent(String(params.projects)));

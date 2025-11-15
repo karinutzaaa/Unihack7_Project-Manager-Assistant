@@ -2,7 +2,7 @@
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import dayjs from "dayjs";
 import { LinearGradient } from "expo-linear-gradient";
-import { Link, router, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Dimensions,
@@ -17,10 +17,7 @@ import {
 import { Calendar } from "react-native-calendars";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BurgerMenu from "./burger-menu-manager";
-
-
-
-
+import NotificationManager from "./notification-manager";
 
 const { width } = Dimensions.get("window");
 const CARD_MARGIN = 12;
@@ -28,7 +25,6 @@ const CARD_WIDTH = (width - CARD_MARGIN * 3) / 2;
 const calendarScale = Math.min(width / 430, 1.0);
 
 
-/* Departments Section */
 const departmentColors: Record<string, string> = {
   "Design Mecanic": "#40d58fff",
   "Design Electric": "#33C1FF",
@@ -56,7 +52,6 @@ const departmentIcons: Record<string, { name: string; library?: "ion" | "mci" }>
   "Teste": { name: "flask-outline", library: "ion" },
   "Livrare": { name: "truck-outline", library: "mci" },
 };
-
 
 type Project = {
   id: string;
@@ -140,8 +135,9 @@ const sampleProjects: Project[] = [
 export default function ManagerLogPage(): React.ReactElement {
   const params = useLocalSearchParams();
   const [projects, setProjects] = useState<Project[]>(sampleProjects);
+  const [open, setOpen] = useState(false);
 
-  // keep compatibility with previous update flow
+  // handle updates from other pages
   useEffect(() => {
     if (params.updatedProject) {
       try {
@@ -156,6 +152,80 @@ export default function ManagerLogPage(): React.ReactElement {
     }
   }, [params.updatedProject]);
 
+  const derivedDepartments = useMemo(() => {
+    const set = new Set<string>();
+    projects.forEach((p) => {
+      if (Array.isArray(p.departments)) p.departments.forEach((d) => set.add(d));
+      if (p.department) set.add(p.department);
+    });
+    return set.size > 0
+      ? Array.from(set)
+      : [
+        "Design Mecanic",
+        "Design Electric",
+        "Purchasing",
+        "Tooling Shop",
+        "Assamblare Mecanica",
+        "Assamblare Electrica",
+        "Assamblare Finala",
+        "Software Offline",
+        "Software Debug",
+        "Teste",
+        "Livrare",
+      ];
+  }, [projects]);
+
+  // KPIs
+  const progressPercent = projects.length
+    ? Math.round(projects.reduce((acc, t) => acc + (t.progress ?? 0), 0) / projects.length)
+    : 0;
+  const completedTasks = projects.filter((p) => (p.progress ?? 0) === 100).length;
+  const inProgress = projects.filter((p) => (p.progress ?? 0) > 0 && (p.progress ?? 0) < 100).length;
+
+  // calendar marked dates
+  const markedDates = useMemo(() => {
+    const marks: Record<string, any> = {};
+    projects.forEach((p) => {
+      if (!p.deadline) return;
+      if (!marks[p.deadline]) marks[p.deadline] = { dots: [] };
+      marks[p.deadline].dots.push({ key: p.id, color: p.color || "#2962FF" });
+    });
+    const today = dayjs().format("YYYY-MM-DD");
+    marks[today] = { ...(marks[today] || {}), selected: true, selectedColor: "#E8F6FF" };
+    return marks;
+  }, [projects]);
+
+  const renderProject = ({ item }: { item: Project }) => {
+    const safePercent = Math.max(0, Math.min(100, Number(item.progress ?? 0)));
+    return (
+      <TouchableOpacity
+        style={styles.card}
+        activeOpacity={0.9}
+        onPress={() =>
+          router.push(`/project/manager/pages-manager/project-page-manager?id=${item.id}`)
+        }
+      >
+        <Image source={{ uri: item.image }} style={styles.cardImage} resizeMode="cover" />
+        <View style={styles.cardContent}>
+          <Text style={styles.cardTitle} numberOfLines={2}>{item.name}</Text>
+          <Text style={styles.cardDescription} numberOfLines={2}>{item.description}</Text>
+          <View style={styles.cardMetaRow}>
+            <Text style={styles.deadlineSmall}>{item.deadline ? `Deadline: ${item.deadline}` : "No deadline"}</Text>
+            <Text style={styles.percentSmall}>{safePercent}%</Text>
+          </View>
+          <View style={styles.progressBarTrack}>
+            <View style={[styles.progressBarFill, { width: `${safePercent}%`, backgroundColor: item.color || "#4FC3F7" }]} />
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  const notifications = [
+    { id: "1", title: "New Task Assigned", message: "You have a new task: Design Review at 11:00", type: "info", time: "1h ago" },
+    { id: "2", title: "Meeting Reminder", message: "Project Planning starts at 14:00 on Zoom", type: "meeting", time: "2h ago" },
+    { id: "3", title: "Task Completed", message: "John marked 'Client Call' as done", type: "success", time: "Yesterday" },
+  ];
   // Derived departments (fallback list included)
   const derivedDepartments = useMemo(() => {
     const set = new Set<string>();
@@ -235,34 +305,30 @@ export default function ManagerLogPage(): React.ReactElement {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Wrapper general */}
+      {/* HEADER TOOLBAR */}
       <View style={{ position: "relative" }}>
-
-        {/* HEADER TOOLBAR */}
         <LinearGradient
           colors={["#2962FF", "#4FC3F7"]}
           start={[0, 0]}
           end={[1, 1]}
           style={styles.toolbarContainer}
         >
-          {/* BUTON BURGER */}
-          <TouchableOpacity
-            style={styles.iconButton}
-            onPress={() => setOpen(true)}
-          >
+          {/* BURGER */}
+          <TouchableOpacity style={styles.iconButton} onPress={() => setOpen(true)}>
             <Ionicons name="menu" size={24} color="#fff" />
           </TouchableOpacity>
 
-          {/* REFRESH */}
-          <TouchableOpacity
-            style={styles.iconButton}
-            onPress={() => { }}
-          >
-            <Ionicons name="refresh" size={18} color="#fff" />
-          </TouchableOpacity>
+          {/* REFRESH & NOTIFICATIONS */}
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <TouchableOpacity style={styles.iconButton} onPress={() => { }}>
+              <Ionicons name="refresh" size={18} color="#fff" />
+            </TouchableOpacity>
+
+            <NotificationManager notifications={notifications} />
+          </View>
         </LinearGradient>
 
-        {/* OVERLAY PENTRU ÎNCHIDERE BURGER */}
+        {/* BURGER OVERLAY */}
         {open && (
           <TouchableOpacity
             style={{
@@ -278,13 +344,9 @@ export default function ManagerLogPage(): React.ReactElement {
             onPress={() => setOpen(false)}
           />
         )}
+        {open && <BurgerMenu closeMenu={() => setOpen(false)} />}
 
-        {/* MENIUL, SCOAS DIN TOOLBAR */}
-        {open && (
-          <BurgerMenu closeMenu={() => setOpen(false)} />
-        )}
-
-        {/* HEADER GRADIENT DE DEDESUBT */}
+        {/* HEADER KPIs */}
         <LinearGradient
           colors={["#2962FF", "#4FC3F7"]}
           start={[0, 0]}
@@ -313,11 +375,11 @@ export default function ManagerLogPage(): React.ReactElement {
             </View>
           </View>
         </LinearGradient>
-
       </View>
 
+      {/* MAIN CONTENT */}
       <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-        {/* Overview */}
+        {/* Project Overview & Cards */}
         <View style={styles.sectionCard}>
           <Text style={styles.sectionTitle}>Project Overview</Text>
           <Text style={styles.sectionSubtitle}>Global progress snapshot</Text>
@@ -330,18 +392,22 @@ export default function ManagerLogPage(): React.ReactElement {
             renderItem={({ item }) => {
               const safePercent = Math.max(0, Math.min(100, Number(item.progress ?? 0)));
               return (
-                <Link href={`/project/manager/pages-manager/analytics-page?projectId=${item.id}`} asChild>
-                  <TouchableOpacity style={styles.summaryCard} activeOpacity={0.9}>
-                    <Text style={styles.summaryName}>{item.name}</Text>
-                    <View style={styles.summaryRow}>
-                      <View style={styles.smallProgressBackground}>
-                        <View style={[styles.smallProgressFill, { width: `${safePercent}%`, backgroundColor: item.color || "#4FC3F7" }]} />
-                      </View>
-                      <Text style={styles.summaryPercent}>{safePercent}%</Text>
+                <TouchableOpacity
+                  style={styles.summaryCard}
+                  activeOpacity={0.9}
+                  onPress={() =>
+                    router.push(`/project/manager/pages-manager/analytics-page?projectId=${item.id}`)
+                  }
+                >
+                  <Text style={styles.summaryName}>{item.name}</Text>
+                  <View style={styles.summaryRow}>
+                    <View style={styles.smallProgressBackground}>
+                      <View style={[styles.smallProgressFill, { width: `${safePercent}%`, backgroundColor: item.color || "#4FC3F7" }]} />
                     </View>
-                    <Text style={styles.deadlineText}>{item.deadline ? `Deadline: ${item.deadline}` : "No deadline"}</Text>
-                  </TouchableOpacity>
-                </Link>
+                    <Text style={styles.summaryPercent}>{safePercent}%</Text>
+                  </View>
+                  <Text style={styles.deadlineText}>{item.deadline ? `Deadline: ${item.deadline}` : "No deadline"}</Text>
+                </TouchableOpacity>
               );
             }}
           />
@@ -366,7 +432,6 @@ export default function ManagerLogPage(): React.ReactElement {
         <View style={styles.sectionCard}>
           <Text style={styles.sectionTitle}>Departments</Text>
           <Text style={styles.sectionSubtitle}>Explore project categories</Text>
-
           <View style={styles.departmentsGrid}>
             {Object.entries(departmentColors).map(([dep, color]) => {
               const icon = departmentIcons[dep];
@@ -404,7 +469,6 @@ export default function ManagerLogPage(): React.ReactElement {
               );
             })}
           </View>
-
         </View>
 
         {/* Calendar */}
@@ -450,9 +514,72 @@ export default function ManagerLogPage(): React.ReactElement {
   );
 }
 
-
-
 const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#F6F7FB" },
+  scrollContainer: { paddingBottom: 100, paddingTop: 6 },
+  toolbarContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderBottomWidth: 0,
+    borderBottomColor: "rgba(255,255,255,0.15)",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  iconButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 10,
+    backgroundColor: "rgba(255,255,255,0.12)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 8
+  },
+  headerGradient: {
+    paddingTop: 20,
+    paddingBottom: 14,
+    paddingHorizontal: 16,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    marginBottom: 12,
+    elevation: 6,
+  },
+  headerRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  headerTitleWrap: { flex: 1, paddingHorizontal: 12, alignItems: "center" },
+  headerTitle: { color: "#fff", fontSize: 20, fontWeight: "800", textAlign: "center" },
+  headerSubtitle: { color: "rgba(255,255,255,0.9)", fontSize: 12, marginTop: 4, textAlign: "center" },
+  headerKpiRow: { flexDirection: "row", marginTop: 12, justifyContent: "space-between", gap: 8 },
+  headerKpi: { flex: 1, alignItems: "center" },
+  headerKpiLabel: { color: "rgba(255,255,255,0.9)", fontSize: 12 },
+  headerKpiValue: { color: "#fff", fontSize: 16, fontWeight: "800", marginTop: 6 },
+  sectionCard: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    marginHorizontal: 12,
+    marginVertical: 10,
+    padding: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  summaryCard: {
+    width: 220,
+    backgroundColor: "#fff",
+    borderRadius: 14,
+    padding: 12,
+    marginRight: 12,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+  },
+  summaryName: { fontSize: 14, fontWeight: "700", color: "#0F172A", marginBottom: 8 },
   container: { flex: 1, backgroundColor: "#F6F7FB" },
   scrollContainer: { paddingBottom: 100, paddingTop: 6 },
 
@@ -522,12 +649,6 @@ const styles = StyleSheet.create({
   smallProgressFill: { height: "100%", borderRadius: 6 },
   summaryPercent: { width: 44, fontWeight: "700", color: "#0F172A" },
   deadlineText: { color: "#6B7280", fontSize: 12 },
-
-  /* Projects list */
-  projectsHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 12, marginVertical: 8 },
-  sectionTitle: { fontSize: 18, fontWeight: "700", color: "#0F1724", paddingHorizontal: 16, marginBottom: 6 },
-  sectionSubtitle: { fontSize: 13, color: "#6B7280", paddingHorizontal: 16, marginBottom: 12 },
-
   row: { justifyContent: "space-between", marginBottom: CARD_MARGIN, paddingHorizontal: 0 },
   card: {
     width: CARD_WIDTH,
@@ -540,6 +661,19 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.03,
     shadowRadius: 6,
   },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#0F172A",
+    marginBottom: 4,
+  },
+
+  sectionSubtitle: {
+    fontSize: 12,
+    color: "#6B7280",
+    marginBottom: 8,
+  },
+
   cardImage: { width: "100%", height: 140 },
   cardContent: { padding: 12 },
   cardTitle: { fontSize: 15, fontWeight: "800", color: "#0F172A", marginBottom: 6 },
@@ -547,106 +681,144 @@ const styles = StyleSheet.create({
   cardMetaRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8 },
   deadlineSmall: { fontSize: 12, color: "#6B7280" },
   percentSmall: { fontSize: 12, color: "#0F1724", fontWeight: "700" },
-
   progressBarTrack: { backgroundColor: "#F3F4F6", height: 8, borderRadius: 6, overflow: "hidden" },
   progressBarFill: { height: "100%" },
+  departmentsGrid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", marginTop: 10 },
+  departmentCard: { width: "47%", height: 65, borderRadius: 14, marginBottom: 12, alignItems: "center", justifyContent: "center", shadowColor: "#000", shadowOpacity: 0.08, shadowRadius: 6, elevation: 3 },
+  departmentCardText: { color: "#fff", fontSize: 14, fontWeight: "700", textAlign: "center", textShadowColor: "rgba(0,0,0,0.2)", textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 },
+  calendarWrapper: { borderTopWidth: 1, borderTopColor: "#F1F5F9", padding: 12, borderRadius: 16, overflow: "hidden" },
+  fab: { position: "absolute", bottom: 24, right: 24, backgroundColor: "#2962FF", borderRadius: 28, width: 56, height: 56, justifyContent: "center", alignItems: "center", elevation: 6, shadowColor: "#000", shadowOpacity: 0.12, shadowRadius: 8 },
+});
 
-  /* Departments chips */
-  departmentsGrid: {
-    flexDirection: "row",
+smallProgressBackground: { flex: 1, height: 8, backgroundColor: "#F3F4F6", borderRadius: 6, marginRight: 8, overflow: "hidden" },
+smallProgressFill: { height: "100%", borderRadius: 6 },
+summaryPercent: { width: 44, fontWeight: "700", color: "#0F172A" },
+deadlineText: { color: "#6B7280", fontSize: 12 },
+
+/* Projects list */
+projectsHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 12, marginVertical: 8 },
+sectionTitle: { fontSize: 18, fontWeight: "700", color: "#0F1724", paddingHorizontal: 16, marginBottom: 6 },
+sectionSubtitle: { fontSize: 13, color: "#6B7280", paddingHorizontal: 16, marginBottom: 12 },
+
+row: { justifyContent: "space-between", marginBottom: CARD_MARGIN, paddingHorizontal: 0 },
+card: {
+  width: CARD_WIDTH,
+    backgroundColor: "#fff",
+      borderRadius: 14,
+        overflow: "hidden",
+          elevation: 3,
+            marginBottom: 12,
+              shadowColor: "#000",
+                shadowOpacity: 0.03,
+                  shadowRadius: 6,
+  },
+cardImage: { width: "100%", height: 140 },
+cardContent: { padding: 12 },
+cardTitle: { fontSize: 15, fontWeight: "800", color: "#0F172A", marginBottom: 6 },
+cardDescription: { fontSize: 13, color: "#6B7280", marginBottom: 8 },
+cardMetaRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8 },
+deadlineSmall: { fontSize: 12, color: "#6B7280" },
+percentSmall: { fontSize: 12, color: "#0F1724", fontWeight: "700" },
+
+progressBarTrack: { backgroundColor: "#F3F4F6", height: 8, borderRadius: 6, overflow: "hidden" },
+progressBarFill: { height: "100%" },
+
+/* Departments chips */
+departmentsGrid: {
+  flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-between",
-    marginTop: 10,
+      justifyContent: "space-between",
+        marginTop: 10,
   },
 
-  departmentCard: {
-    width: "47%", // ușor mai înguste
+departmentCard: {
+  width: "47%", // ușor mai înguste
     height: 65,
-    borderRadius: 14,
-    marginBottom: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    elevation: 3,
+      borderRadius: 14,
+        marginBottom: 12,
+          alignItems: "center",
+            justifyContent: "center",
+              shadowColor: "#000",
+                shadowOpacity: 0.08,
+                  shadowRadius: 6,
+                    elevation: 3,
   },
 
-  departmentCardText: {
-    color: "#fff",
+departmentCardText: {
+  color: "#fff",
     fontSize: 14,
-    fontWeight: "700",
-    textAlign: "center",
-    textShadowColor: "rgba(0,0,0,0.2)",
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
+      fontWeight: "700",
+        textAlign: "center",
+          textShadowColor: "rgba(0,0,0,0.2)",
+            textShadowOffset: { width: 0, height: 1 },
+  textShadowRadius: 2,
   },
 
 
-  /* Calendar */
-  calendarSection: {
-    paddingHorizontal: 12,
+/* Calendar */
+calendarSection: {
+  paddingHorizontal: 12,
     marginTop: 6,
-    paddingBottom: 36,
+      paddingBottom: 36,
   },
-  calendarCard: {
-    backgroundColor: "#fff",
+calendarCard: {
+  backgroundColor: "#fff",
     borderRadius: 14,
-    overflow: "hidden",
-    marginTop: 8,
-    height: 550,
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOpacity: 0.03,
-    shadowRadius: 8,
-    flex: 1,
+      overflow: "hidden",
+        marginTop: 8,
+          height: 550,
+            elevation: 3,
+              shadowColor: "#000",
+                shadowOpacity: 0.03,
+                  shadowRadius: 8,
+                    flex: 1,
   },
-  calendar: {
-    borderRadius: 12,
+calendar: {
+  borderRadius: 12,
     flex: 1,
-    width: "100%",
-    height: "100%",
+      width: "100%",
+        height: "100%",
   },
 
 
-  /* FAB */
-  fab: {
-    position: "absolute",
+/* FAB */
+fab: {
+  position: "absolute",
     bottom: 24,
-    right: 24,
-    backgroundColor: "#2962FF",
-    borderRadius: 28,
-    width: 56,
-    height: 56,
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 6,
-    shadowColor: "#000",
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
+      right: 24,
+        backgroundColor: "#2962FF",
+          borderRadius: 28,
+            width: 56,
+              height: 56,
+                justifyContent: "center",
+                  alignItems: "center",
+                    elevation: 6,
+                      shadowColor: "#000",
+                        shadowOpacity: 0.12,
+                          shadowRadius: 8,
   },
-  sectionCard: {
-    backgroundColor: "#fff",
+sectionCard: {
+  backgroundColor: "#fff",
     borderRadius: 16,
-    marginHorizontal: 12,
-    marginVertical: 10,
-    padding: 16,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
+      marginHorizontal: 12,
+        marginVertical: 10,
+          padding: 16,
+            shadowColor: "#000",
+              shadowOpacity: 0.08,
+                shadowRadius: 8,
+                  elevation: 3,
   },
-  departmentsWrap: {
-    flexDirection: "row",
+departmentsWrap: {
+  flexDirection: "row",
     flexWrap: "wrap",
-    marginTop: 8,
+      marginTop: 8,
   },
-  calendarWrapper: {
-    borderTopWidth: 1,
+calendarWrapper: {
+  borderTopWidth: 1,
     borderTopColor: "#F1F5F9",
-    padding: 12,
-    borderRadius: 16,
-    overflow: "hidden",
+      padding: 12,
+        borderRadius: 16,
+          overflow: "hidden",
   },
 
 });

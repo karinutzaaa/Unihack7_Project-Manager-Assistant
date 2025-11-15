@@ -66,7 +66,7 @@ function extractDate(q: string): string | null {
     iulie: 7, august: 8, septembrie: 9, octombrie: 10, noiembrie: 11, decembrie: 12,
   };
 
-  return `2025-${String(months[month[0]]).padStart(2,"0")}-${String(day[1]).padStart(2,"0")}`;
+  return `2025-${String(months[month[0]]).padStart(2, "0")}-${String(day[1]).padStart(2, "0")}`;
 }
 
 
