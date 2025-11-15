@@ -1,14 +1,15 @@
+
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
+  Image,
   SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
-  Image
+  View
 } from "react-native";
 
 export default function Index() {
@@ -28,13 +29,14 @@ export default function Index() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+
       {/* FUNDAL GRADIENT */}
       <LinearGradient
         colors={["#E4ECFF", "#F3F6FB"]}
         start={[0, 0]}
         end={[1, 1]}
-        style={[StyleSheet.absoluteFill, styles.gradient]}
+        style={StyleSheet.absoluteFill}
       />
 
       {/* BLOB-uri decorative */}
@@ -89,7 +91,7 @@ export default function Index() {
           </LinearGradient>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -100,9 +102,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 28,
   },
 
-  gradient: {
-    position: "absolute",
-  },
   /* BLOB-URI */
   blobBlue: {
     position: "absolute",
