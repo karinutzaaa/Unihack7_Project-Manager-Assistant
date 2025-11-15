@@ -4,6 +4,8 @@ import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
+import Toolbar from "../components-boss/toolbar-boss";
+
 export default function DepartmentsPage() {
   const params = useLocalSearchParams();
   const department = String(params.department || "All Departments");
@@ -52,6 +54,7 @@ export default function DepartmentsPage() {
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
+      <Toolbar />
       <LinearGradient
         colors={["#1b18b6", "#3c38c0"]}
         start={{ x: 0, y: 0 }}
@@ -113,7 +116,7 @@ export default function DepartmentsPage() {
             style={styles.projectCard}
             onPress={() =>
               router.push({
-                pathname: `/project/ProjectPage`,
+                pathname: `/project/boss/pages-boss/project-page-boss`,
                 params: { id: item.id },
               } as any)
             }
@@ -189,9 +192,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     elevation: 3,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
+    boxShadow: "0px 2px 8px rgba(0,0,0,0.10)",
   },
   projectName: { fontSize: 16, fontWeight: "700", color: "#1b18b6" },
   projectMeta: { fontSize: 13, color: "#666", marginTop: 4 },
