@@ -12,18 +12,19 @@ export default function CalendarDay() {
     const date = (params.date as string) || undefined;
     const [open, setOpen] = useState(false);
 
-    let projects: { id?: string; name?: string; color?: string; deadline?: string }[] = [];
-    if (params.projects) {
-        try {
-            if (params.projects) return JSON.parse(decodeURIComponent(String(params.projects)));
-        } catch { }
+    const projects = useMemo(() => {
+        if (params.projects) {
+            try {
+                return JSON.parse(decodeURIComponent(String(params.projects)));
+            } catch { }
+        }
         return [
-            { id: 1, name: "Project Alpha", deadline: "2025-11-16", color: "#1b18b6", progress: 30 },
-            { id: 2, name: "Project Beta", deadline: "2025-11-18", color: "#2962FF", progress: 50 },
-            { id: 3, name: "Project Gamma", deadline: "2025-11-18", color: "#33C1FF", progress: 70 },
-            { id: 4, name: "Project Delta", deadline: "2025-11-20", color: "#004f2fff", progress: 20 },
-            { id: 5, name: "Project Epsilon", deadline: "2025-11-22", color: "#26A69A", progress: 90 },
-            { id: 6, name: "Project Zeta", deadline: "2025-11-25", color: "#00a643ff", progress: 10 },
+            { id: "1", name: "Project Alpha", deadline: "2025-11-16", color: "#1b18b6", progress: 30 },
+            { id: "2", name: "Project Beta", deadline: "2025-11-18", color: "#2962FF", progress: 50 },
+            { id: "3", name: "Project Gamma", deadline: "2025-11-18", color: "#33C1FF", progress: 70 },
+            { id: "4", name: "Project Delta", deadline: "2025-11-20", color: "#004f2fff", progress: 20 },
+            { id: "5", name: "Project Epsilon", deadline: "2025-11-22", color: "#26A69A", progress: 90 },
+            { id: "6", name: "Project Zeta", deadline: "2025-11-25", color: "#00a643ff", progress: 10 },
         ];
     }, [params.projects]);
 

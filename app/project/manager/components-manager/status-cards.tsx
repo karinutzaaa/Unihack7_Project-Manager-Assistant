@@ -1,4 +1,3 @@
-// components-manager/status-cards.tsx
 import { Ionicons } from "@expo/vector-icons";
 import dayjs from "dayjs";
 import { LinearGradient } from "expo-linear-gradient";
@@ -9,8 +8,9 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
+
 
 type Task = {
   id?: string;

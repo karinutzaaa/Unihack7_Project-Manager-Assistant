@@ -9,6 +9,8 @@ import {
   Modal,
   ScrollView,
   Text,
+  TextInput,
+  TouchableOpacity,
   View
 } from "react-native";
 import { Calendar } from "react-native-calendars";
@@ -39,7 +41,7 @@ export default function CalendarComponent({
   onTaskAdded,
 }: Props) {
   const today = dayjs();
-  const [tasks, setTasks] = useState<Task[]>(initialTasks ?? [] ?? []);
+  const [tasks, setTasks] = useState<Task[]>(initialTasks ?? []);
   const [showModal, setShowModal] = useState(false);
   const [showCalendar, setShowCalendar] = useState<"start" | "deadline" | null>(null);
   const [warning, setWarning] = useState("");
@@ -80,7 +82,7 @@ export default function CalendarComponent({
     const newTask: Task = {
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
       name: taskData.name,
-      description: taskData.description,
+      // description: taskData.description,
       departments: taskData.departments,
       color: deptColor,
       startDate: taskData.startDate,
@@ -127,7 +129,7 @@ export default function CalendarComponent({
             <View
               style={[
                 styles.dayBox,
-                { backgroundColor: bgColor },
+                { backgroundColor: "white" },
                 isToday && styles.todayBox,
                 state === "disabled" && styles.dayBoxDisabled,
               ]}

@@ -5,7 +5,6 @@ import React, { useEffect, useState } from "react";
 import BurgerMenu from "./burger-menu-manager";
 
 
-import { LinearGradient } from "expo-linear-gradient";
 import {
   Dimensions,
   Modal,
@@ -405,16 +404,14 @@ export default function AnalyticsColor(): React.ReactElement {
             </View>
           </Modal>
         </View>
-      </SafeAreaView >
-      );
+      </SafeAreaView>
+    </View>
+  );
 }
 
-
-
-
-      const styles = StyleSheet.create({
-        container: {flex: 1, backgroundColor: "#F6F7FB" },
-      scrollContainer: {paddingBottom: 120 },
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#F6F7FB" },
+  scrollContainer: { paddingBottom: 120 },
 
       /*TOOLBAR*/
       toolbarContainer: {

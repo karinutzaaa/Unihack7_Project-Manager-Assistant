@@ -68,8 +68,8 @@ export default function ProjectPageManager(): React.ReactElement {
     "Assamblare Finala": "#8F33FF",
     "Software Offline": "#008c85ff",
     "Software Debug": "#00a643ff",
-    ""Teste"": "#3a33ffff",
-    ""Livrare"": "#d454ffff",
+    "Teste": "#3a33ffff",
+    "Livrare": "#d454ffff",
   };
 
   function textColorForBg(hex: string) {
@@ -236,172 +236,139 @@ export default function ProjectPageManager(): React.ReactElement {
               )
             }
           />
-          {/* 🔷 CONȚINUTUL PRINCIPAL */}
-          <ScrollView contentContainerStyle={styles.scrollContainer}>
-            <OverviewNotesComponent
-              project={project}
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>📅 Schedule</Text>
+            <CalendarComponent
               tasks={tasks}
-              notes={notes}
-              onAddNote={(note) => setNotes((prev) => [note, ...prev])}
-              onEditNote={(noteId, newText) =>
-                setNotes((prev) =>
-                  prev.map((n) =>
-                    n.id === noteId ? { ...n, text: newText } : n
-                  )
-                )
-              }
-              onToggleNoteChecked={toggleNoteChecked}
-              onAnalyticsPress={() =>
-                router.push("/project/manager/pages-manager/analytics-page")
-              }
-              onOpenTaskSheet={() =>
-                router.push(
-                  "/project/manager/pages-manager/microsoft-assistant-page"
-                )
-              }
+              departmentColors={departmentColors}
+              textColorForBg={textColorForBg}
+              styles={styles}
+              onTaskAdded={(newTask) => {
+                const mapped = {
+                  id: `task-${Date.now()}`,
+                  name: newTask.name,
+                  departments: newTask.departments ?? [],
+                  color:
+                    newTask.color ??
+                    departmentColors[newTask.departments?.[0] ?? "General"] ??
+                    "#1b18b6",
+                  deadline: newTask.deadline ?? today.format("YYYY-MM-DD"),
+                  createdAt: today.format("YYYY-MM-DD"),
+                  done: false,
+                  progress: 0,
+                  startDate: today.format("YYYY-MM-DD"),
+                } as Task;
+                setTasks((prev) => [...prev, mapped]);
+              }}
             />
+          </View>
 
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>📅 Schedule</Text>
-              <CalendarComponent
-                tasks={tasks}
-                departmentColors={departmentColors}
-                textColorForBg={textColorForBg}
-                styles={styles}
-                onTaskAdded={(newTask) => {
-                  const mapped = {
-                    id: `task-${Date.now()}`,
-                    name: newTask.name,
-                    departments: newTask.departments ?? [],
-                    color:
-                      newTask.color ??
-                      departmentColors[newTask.departments?.[0] ?? "General"] ??
-                      "#1b18b6",
-                    deadline: newTask.deadline ?? today.format("YYYY-MM-DD"),
-                    createdAt: today.format("YYYY-MM-DD"),
-                    done: false,
-                    progress: 0,
-                    startDate: today.format("YYYY-MM-DD"),
-                  } as Task;
-                  setTasks((prev) => [...prev, mapped]);
-                }}
-              />
-            </View>
-
-            <View style={styles.section}>
-              <StatusCards
-                pastDue={pastDue}
-                inProgress={inProgress}
-                done={done}
-                departmentColors={departmentColors}
-                textColorForBg={textColorForBg}
-                onMarkDone={(taskId) =>
-                  setTasks((prev) =>
-                    prev.map((t) =>
-                      t.id === taskId ? { ...t, done: true } : t
-                    )
+          <View style={styles.section}>
+            <StatusCards
+              pastDue={pastDue}
+              inProgress={inProgress}
+              done={done}
+              departmentColors={departmentColors}
+              textColorForBg={textColorForBg}
+              onMarkDone={(taskId) =>
+                setTasks((prev) =>
+                  prev.map((t) =>
+                    t.id === taskId ? { ...t, done: true } : t
                   )
+                )
+              }
+              onEditTask={(taskId) => {
+                const idx = tasks.findIndex((t) => t.id === taskId);
+                if (idx >= 0) {
+                  // edit logic here
+                  // edit logic here
                 }
-                onEditTask={(taskId) => {
-                  const idx = tasks.findIndex((t) => t.id === taskId);
-                  if (idx >= 0) {
-                    // edit logic here
-                    // edit logic here
-                  }
-                }}
-              />
-            </View>
-          </ScrollView>
-        </SafeAreaView >
-        );
+              }}
+            />
+          </View>
+        </ScrollView>
+      </View>
+    </SafeAreaView>
+  );
 }
 
-        // 🔷 STYLES
-        const styles = StyleSheet.create({
-          container: {flex: 1, backgroundColor: "#F6F7FB" },
-        scrollContainer: {paddingBottom: 120, paddingHorizontal: 14 },
+// 🔷 STYLES
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#F6F7FB" },
+  scrollContainer: { paddingBottom: 120, paddingHorizontal: 14 },
 
-        /* TOOLBAR ROW */
-        toolbarRow: {
-          flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        marginBottom: 6,
+  /* TOOLBAR ROW */
+  toolbarRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 6,
   },
 
-        iconButton: {
-          width: 44,
-        height: 44,
-        borderRadius: 10,
-        backgroundColor: "rgba(255,255,255,0.12)",
-        alignItems: "center",
-        justifyContent: "center",
-        marginRight: 8,
+  iconButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 10,
+    backgroundColor: "rgba(255,255,255,0.12)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 8,
   },
 
-        /*TOOLBAR*/
-        toolbarContainer: {
-          flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        paddingHorizontal: 18,
-        paddingVertical: 12,
-        borderBottomWidth: 0,
-        borderBottomColor: "rgba(255,255,255,0.15)",
-        shadowColor: "#000",
-        shadowOffset: {width: 0, height: 3 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 4,
+  /*TOOLBAR*/
+  toolbarContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderBottomWidth: 0,
+    borderBottomColor: "rgba(255,255,255,0.15)",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
   },
 
-        iconButton: {
-          width: 44,
-        height: 44,
-        borderRadius: 10,
-        backgroundColor: "rgba(255,255,255,0.12)",
-        alignItems: "center",
-        justifyContent: "center",
-        marginRight: 8
+  /* Header gradient */
+  headerGradient: {
+    paddingTop: 20,
+    paddingBottom: 14,
+    paddingHorizontal: 16,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    marginBottom: 12,
+    elevation: 6,
   },
+  headerRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
 
-        /* Header gradient */
-        headerGradient: {
-          paddingTop: 20,
-        paddingBottom: 14,
-        paddingHorizontal: 16,
-        borderBottomLeftRadius: 20,
-        borderBottomRightRadius: 20,
-        marginBottom: 12,
-        elevation: 6,
+  headerTitleWrap: { flex: 1, paddingHorizontal: 12, alignItems: "center" },
+  headerTitle: { color: "#fff", fontSize: 20, fontWeight: "800", textAlign: "center" },
+  headerSubtitle: { color: "rgba(255,255,255,0.9)", fontSize: 12, marginTop: 4, textAlign: "center" },
+
+  headerKpiRow: { flexDirection: "row", marginTop: 12, justifyContent: "space-between", gap: 8 },
+  headerKpi: { flex: 1, alignItems: "center" },
+  headerKpiLabel: { color: "rgba(255,255,255,0.9)", fontSize: 12 },
+  headerKpiValue: { color: "#fff", fontSize: 16, fontWeight: "800", marginTop: 6 },
+
+
+  /* SECTIONS */
+  section: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
   },
-        headerRow: {flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-
-        headerTitleWrap: {flex: 1, paddingHorizontal: 12, alignItems: "center" },
-        headerTitle: {color: "#fff", fontSize: 20, fontWeight: "800", textAlign: "center" },
-        headerSubtitle: {color: "rgba(255,255,255,0.9)", fontSize: 12, marginTop: 4, textAlign: "center" },
-
-        headerKpiRow: {flexDirection: "row", marginTop: 12, justifyContent: "space-between", gap: 8 },
-        headerKpi: {flex: 1, alignItems: "center" },
-        headerKpiLabel: {color: "rgba(255,255,255,0.9)", fontSize: 12 },
-        headerKpiValue: {color: "#fff", fontSize: 16, fontWeight: "800", marginTop: 6 },
-
-
-        /* SECTIONS */
-        section: {
-          backgroundColor: "#fff",
-        borderRadius: 16,
-        padding: 16,
-        marginBottom: 16,
-        elevation: 2,
-        shadowColor: "#000",
-        shadowOpacity: 0.05,
-        shadowRadius: 8,
-  },
-        sectionTitle: {
-          fontSize: 16,
-        fontWeight: "700",
-        color: "#0F172A",
-        marginBottom: 10,
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#0F172A",
+    marginBottom: 10,
   },
 });
