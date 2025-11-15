@@ -89,7 +89,7 @@ export default function CommunityPageWorker() {
 
         <View style={styles.actions}>
           <TouchableOpacity onPress={() => toggleLike(event.id)} style={styles.actionButton}>
-            <Text style={{ color: isLiked ? "#EF4444" : "#555" }}>{isLiked ? "♥ Liked" : "♡ Like"} ({event.likes + (isLiked ? 1 : 0)})</Text>
+            <Text style={{ color: isLiked ? "#EF4444" : "#555" }}>{isLiked ? "♥️ Liked" : "♡ Like"} ({event.likes + (isLiked ? 1 : 0)})</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => toggleJoin(event.id)} style={[styles.actionButton, isJoined && styles.joinedButton]}>
             <Text style={{ color: "#fff" }}>{isJoined ? "Joined" : "Join"} ({event.participants + (isJoined ? 1 : 0)})</Text>

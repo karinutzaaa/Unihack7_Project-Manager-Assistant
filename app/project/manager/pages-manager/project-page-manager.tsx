@@ -4,12 +4,11 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -323,7 +322,7 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   headerRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
- 
+
   headerTitleWrap: { flex: 1, paddingHorizontal: 12, alignItems: "center" },
   headerTitle: { color: "#fff", fontSize: 20, fontWeight: "800", textAlign: "center" },
   headerSubtitle: { color: "rgba(255,255,255,0.9)", fontSize: 12, marginTop: 4, textAlign: "center" },
