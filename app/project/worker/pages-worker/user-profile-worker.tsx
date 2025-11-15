@@ -71,7 +71,10 @@ export default function ProjectUserPage() {
       <ScrollView contentContainerStyle={{ paddingBottom: 160 }}>
         <View style={styles.profileCard}>
           {/* Poza de profil sus */}
-          
+          <Image
+            source={require("../../../user.png")} // ajustează calea corect
+            style={styles.profileImage}
+          />
 
           <Text style={styles.userName}>{user?.name}</Text>
           <Text style={styles.userRank}>{user?.rank}</Text>

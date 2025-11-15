@@ -91,7 +91,10 @@ export default function Toolbar() {
               router.push("/project/worker/pages-worker/user-profile-worker")
             }
           >
-       
+            <Image
+              source={require("../../../user.png")}
+              style={styles.profileImage}
+            />
           </TouchableOpacity>
         </View>
       </View>
