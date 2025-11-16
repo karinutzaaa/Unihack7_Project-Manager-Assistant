@@ -82,7 +82,8 @@ const sampleProjects: Project[] = [
     name: "Robotics Automation System",
     description: "Real-time robotic motion planning and AI vision.",
     image:
-      "https://images.unsplash.com/photo-1581091012184-5c1b9d8f6d6e?auto=format&fit=crop&w=800&q=60",
+      "https://images.unsplash.com/photo-1518779578993-ec3579fee39f?auto=format&fit=crop&w=800&q=60",
+
     progress: 72,
     deadline: "2025-11-15",
     color: "#2962FF",
@@ -124,7 +125,8 @@ const sampleProjects: Project[] = [
     name: "Aerospace Simulation",
     description: "Thermal and aerodynamic testing for UAV design.",
     image:
-      "https://images.unsplash.com/photo-1598300051280-4e01d97cf0d1?auto=format&fit=crop&w=800&q=60",
+      "https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=800&q=60",
+
     progress: 12,
     deadline: "2026-01-10",
     color: "#00C9A7",

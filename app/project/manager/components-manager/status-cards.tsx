@@ -1,16 +1,8 @@
+import React, { useEffect, useState } from "react";
+import { Modal, Text, TouchableOpacity, View } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import dayjs from "dayjs";
-import { LinearGradient } from "expo-linear-gradient";
-import React, { useEffect, useState } from "react";
-import {
-  Modal,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from "react-native";
-
 
 type Task = {
   id?: string;
@@ -25,7 +17,7 @@ type Task = {
   cost?: number;
 };
 
-type Props = {
+type StatusCardsProps = {
   pastDue: Task[];
   inProgress: Task[];
   done: Task[];
@@ -35,7 +27,7 @@ type Props = {
   onEditTask?: (taskId?: string) => void;
 };
 
-export default function StatusCards({
+function StatusCards({
   pastDue,
   inProgress,
   done,
@@ -43,32 +35,15 @@ export default function StatusCards({
   textColorForBg,
   onMarkDone,
   onEditTask,
-}: Props) {
+}: StatusCardsProps) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [filteredPastDue, setFilteredPastDue] = useState<Task[]>([]);
-  const [filteredInProgress, setFilteredInProgress] = useState<Task[]>([]);
-  const [filteredDone, setFilteredDone] = useState<Task[]>([]);
 
-  useEffect(() => {
-    const today = dayjs();
 
-    setFilteredPastDue(
-      pastDue.filter((t) => {
-        const deadlineDate = dayjs(t.deadline);
-        return deadlineDate.isBefore(today) && !t.done;
-      })
-    );
+  const filteredPastDue = pastDue;
+  const filteredInProgress = inProgress;
+  const filteredDone = done;
 
-    setFilteredInProgress(
-      inProgress.filter((t) => {
-        const deadlineDate = dayjs(t.deadline);
-        return deadlineDate.isAfter(today) && !t.done;
-      })
-    );
-
-    setFilteredDone(done.filter((t) => t.done === true));
-  }, [pastDue, inProgress, done]);
 
   const openOptions = (task: Task) => {
     setSelectedTask(task);
@@ -95,11 +70,12 @@ export default function StatusCards({
       return <Text style={styles.emptyText}>No tasks</Text>;
 
     return (
-      <ScrollView style={styles.list} nestedScrollEnabled>
+      <View style={styles.list}>
         {items.map((task) => {
           const dept = task.departments[0];
           const color = dept ? departmentColors[dept] : "#2962FF";
           const textColor = textColorForBg(color);
+
           return (
             <TouchableOpacity
               key={task.id ?? task.name}
@@ -112,35 +88,22 @@ export default function StatusCards({
                 end={{ x: 1, y: 1 }}
                 style={styles.taskCard}
               >
-                <Text
-                  style={[styles.taskTitle, { color: textColor }]}
-                  numberOfLines={1}
-                >
+                <Text style={[styles.taskTitle, { color: textColor }]}>
                   {task.name}
                 </Text>
-                <Text
-                  style={[styles.taskDept, { color: textColor }]}
-                  numberOfLines={1}
-                >
+                <Text style={[styles.taskDept, { color: textColor }]}>
                   {dept}
                 </Text>
               </LinearGradient>
             </TouchableOpacity>
           );
         })}
-      </ScrollView>
+      </View>
     );
-  };
-
-  const getColumnColor = (tasks: Task[]) => {
-    if (tasks.length === 0) return "#F1F5F9";
-    const dept = tasks[0].departments[0];
-    return departmentColors[dept] || "#E2E8F0";
   };
 
   return (
     <View>
-      {/* CARD CU GRADIENT */}
       <LinearGradient
         colors={["#2962FF", "#4FC3F7"]}
         start={{ x: 0, y: 0 }}
@@ -154,86 +117,225 @@ export default function StatusCards({
       </LinearGradient>
 
       <View style={styles.row}>
-        {/* PAST DUE */}
-        <View
-          style={[
-            styles.col,
-            { backgroundColor: `${getColumnColor(filteredPastDue)}15` },
-          ]}
-        >
-          <Text style={[styles.colTitle, { color: "#E53935" }]}>🔴 Past Due</Text>
+        <View style={[styles.col]}>
+          <Text style={[styles.colTitle, { color: "#E53935" }]}>
+            🔴 Past Due
+          </Text>
           {renderList(filteredPastDue)}
         </View>
 
-        {/* IN PROGRESS */}
-        <View
-          style={[
-            styles.col,
-            { backgroundColor: `${getColumnColor(filteredInProgress)}15` },
-          ]}
-        >
-          <Text style={[styles.colTitle, { color: "#2962FF" }]}>
-            🔵 In Progress
-          </Text>
+        <View style={[styles.col]}>
+          <Text style={[styles.colTitle, { color: "#2962FF" }]}>🔵 In Progress</Text>
           {renderList(filteredInProgress)}
         </View>
 
-        {/* DONE */}
-        <View
-          style={[
-            styles.col,
-            { backgroundColor: `${getColumnColor(filteredDone)}15` },
-          ]}
-        >
+        <View style={[styles.col]}>
           <Text style={[styles.colTitle, { color: "#00A86B" }]}>✅ Done</Text>
           {renderList(filteredDone)}
         </View>
       </View>
 
-      {/* MODAL */}
+      <View style={{ alignItems: "center", marginTop: 20 }}>
+        <TouchableOpacity
+          onPress={() => setAddTaskModal(true)}
+          style={{
+            backgroundColor: "#2962FF",
+            paddingVertical: 12,
+            paddingHorizontal: 20,
+            borderRadius: 14,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            shadowColor: "#000",
+            shadowOpacity: 0.15,
+            shadowRadius: 8,
+            elevation: 5,
+          }}
+        >
+          <Ionicons name="add-circle" size={22} color="#fff" />
+          <Text style={{ color: "#fff", fontWeight: "700", marginLeft: 8 }}>
+            Add Task
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+
+      {/* Options Modal */}
       <Modal
-        visible={modalVisible}
+        visible={addTaskModal}
         transparent
-        animationType="fade"
-        onRequestClose={closeOptions}
+        animationType="slide"
+        onRequestClose={() => setAddTaskModal(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalBox}>
-            <Text style={styles.modalTitle}>{selectedTask?.name}</Text>
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: "rgba(0,0,0,0.4)",
+            justifyContent: "center",
+            padding: 20,
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: "#fff",
+              borderRadius: 20,
+              padding: 20,
+            }}
+          >
+            <Text style={{ fontSize: 20, fontWeight: "700", marginBottom: 12 }}>
+              Add Task
+            </Text>
 
-            <TouchableOpacity
-              style={[styles.modalButton, styles.markDone]}
-              onPress={handleMarkDone}
-            >
-              <Ionicons name="checkmark-circle" size={20} color="#fff" />
-              <Text style={styles.modalButtonText}>Mark as Done</Text>
-            </TouchableOpacity>
+            {/* NAME */}
+            <TextInput
+              placeholder="Task name"
+              value={newTaskName}
+              onChangeText={setNewTaskName}
+              style={{
+                borderWidth: 1,
+                borderColor: "#cbd5e1",
+                borderRadius: 12,
+                padding: 10,
+                marginBottom: 10,
+              }}
+            />
 
-            <TouchableOpacity
-              style={[styles.modalButton, styles.editTask]}
-              onPress={handleEditTask}
+            {/* DEPARTMENT */}
+            <Text style={{ marginBottom: 6, fontWeight: "600" }}>Department</Text>
+            <View
+              style={{
+                flexDirection: "row",
+                flexWrap: "wrap",
+                gap: 6,
+                marginBottom: 12,
+              }}
             >
-              <Ionicons name="create-outline" size={20} color="#fff" />
-              <Text style={styles.modalButtonText}>Edit Task</Text>
-            </TouchableOpacity>
+              {Object.keys(departmentColors).map((dep) => (
+                <TouchableOpacity
+                  key={dep}
+                  onPress={() => setNewTaskDepartment(dep)}
+                  style={{
+                    paddingVertical: 6,
+                    paddingHorizontal: 10,
+                    borderRadius: 10,
+                    backgroundColor:
+                      newTaskDepartment === dep ? departmentColors[dep] : "#f1f5f9",
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: newTaskDepartment === dep ? "#fff" : "#000",
+                      fontWeight: "600",
+                    }}
+                  >
+                    {dep}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
 
+            {/* PROGRESS */}
+            <TextInput
+              placeholder="Progress %"
+              keyboardType="numeric"
+              value={newTaskProgress}
+              onChangeText={setNewTaskProgress}
+              style={{
+                borderWidth: 1,
+                borderColor: "#cbd5e1",
+                borderRadius: 12,
+                padding: 10,
+                marginBottom: 10,
+              }}
+            />
+
+            {/* DATES */}
             <TouchableOpacity
-              style={[styles.modalButton, styles.cancel]}
-              onPress={closeOptions}
+              onPress={() => setSelectingDateField("start")}
+              style={{
+                borderWidth: 1,
+                borderColor: "#cbd5e1",
+                borderRadius: 12,
+                padding: 12,
+                marginBottom: 10,
+              }}
             >
-              <Ionicons name="close-outline" size={20} color="#1E293B" />
-              <Text style={[styles.modalButtonText, { color: "#1E293B" }]}>
-                Cancel
+              <Text>
+                {newTaskStart ? `Start: ${newTaskStart}` : "Select start date"}
               </Text>
             </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => setSelectingDateField("end")}
+              style={{
+                borderWidth: 1,
+                borderColor: "#cbd5e1",
+                borderRadius: 12,
+                padding: 12,
+                marginBottom: 10,
+              }}
+            >
+              <Text>{newTaskEnd ? `End: ${newTaskEnd}` : "Select end date"}</Text>
+            </TouchableOpacity>
+
+            {selectingDateField && (
+              <Calendar
+                onDayPress={(day) => {
+                  if (selectingDateField === "start") setNewTaskStart(day.dateString);
+                  if (selectingDateField === "end") setNewTaskEnd(day.dateString);
+                  setSelectingDateField(null);
+                }}
+                style={{ marginBottom: 10 }}
+              />
+            )}
+
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginTop: 10,
+              }}
+            >
+              <TouchableOpacity onPress={() => setAddTaskModal(false)}>
+                <Text style={{ color: "#ef4444", fontWeight: "600" }}>Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => {
+                  onAddTask({
+                    id: Date.now().toString(),
+                    name: newTaskName,
+                    departments: [newTaskDepartment],
+                    progress: Number(newTaskProgress),
+                    startDate: newTaskStart,
+                    deadline: newTaskEnd,
+                    color: departmentColors[newTaskDepartment],
+                    createdAt: new Date().toISOString(),
+                    done: false,
+                  });
+
+                  setAddTaskModal(false);
+                }}
+                style={{
+                  backgroundColor: "#2962FF",
+                  paddingHorizontal: 16,
+                  paddingVertical: 10,
+                  borderRadius: 12,
+                }}
+              >
+                <Text style={{ color: "#fff", fontWeight: "700" }}>Save Task</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
+
     </View>
   );
 }
 
-// STILURI REFINATE
+import { StyleSheet } from "react-native";
+
 const styles = StyleSheet.create({
   headerGradient: {
     borderRadius: 20,
@@ -241,10 +343,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginBottom: 16,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.12,
-    shadowRadius: 10,
-    elevation: 6,
   },
   headerTitle: {
     fontSize: 18,
@@ -279,7 +377,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   list: {
-    maxHeight: 210,
+    marginTop: 4,
   },
   taskCard: {
     borderRadius: 14,
@@ -301,7 +399,6 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
   },
 
-  // Modal UI
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.35)",
@@ -345,3 +442,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+
+export default StatusCards;

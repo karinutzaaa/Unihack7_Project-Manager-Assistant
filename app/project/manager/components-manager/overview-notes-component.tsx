@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Animated,
   Modal,
@@ -66,6 +66,19 @@ export default function OverviewNotesComponent({
   const [noteBeingEdited, setNoteBeingEdited] = useState<{ id: string; text: string } | null>(null);
   const [newNote, setNewNote] = useState("");
 
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const res = await fetch("http://localhost:5196/api/TaskItems");
+        const data = await res.json();
+      } catch (err) {
+        console.error("Failed to fetch tasks:", err);
+      }
+    };
+
+    fetchTasks();
+  }, []);
+
   const overallProgress = tasks.length
     ? Math.round(tasks.reduce((a, t) => a + (t.progress ?? 0), 0) / tasks.length)
     : 0;
@@ -80,13 +93,7 @@ export default function OverviewNotesComponent({
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardTitle}>📊 Overview</Text>
-          <TouchableOpacity
-            onPress={() =>
-              router.push("/project/manager/pages-manager/detailed-overview-page")
-            }
-          >
-            <Ionicons name="information-circle-outline" size={22} color="#3b82f6" />
-          </TouchableOpacity>
+          <Ionicons name="information-circle-outline" size={22} color="#3b82f6" />
         </View>
 
         <View style={styles.statsRow}>
