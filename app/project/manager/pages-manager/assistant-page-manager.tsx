@@ -7,6 +7,11 @@ import BurgerMenu from "./burger-menu-manager";
 import { askAI } from "./local-ai-manager";
 import NotificationManager from "./notification-manager"; // import notificări
 
+
+
+
+
+
 export default function AssistantPageManager() {
   const [input, setInput] = useState("");
   const [response, setResponse] = useState("");
@@ -53,11 +58,15 @@ export default function AssistantPageManager() {
     time: a.date,
   }));
 
-  const submit = () => {
+  const submit = async () => {
     if (input.trim() === "") return;
-    const r = askAI(input.trim());
+
+    setResponse("⏳ Se procesează...");
+
+    const r = await askAI(input.trim());
     setResponse(r);
   };
+
 
   return (
     <View style={{ flex: 1, backgroundColor: "#F3F4F6" }}>

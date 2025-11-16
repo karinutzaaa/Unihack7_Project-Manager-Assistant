@@ -2,7 +2,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Slot } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Text, View } from "react-native";
-
+import { Auth0Provider } from "react-native-auth0";
+import { authConfig } from "./auth-config";
 
 export default function Layout() {
   const [loading, setLoading] = useState(true);
@@ -11,8 +12,8 @@ export default function Layout() {
   useEffect(() => {
     const checkLogin = async () => {
       try {
-        const role = await AsyncStorage.getItem("loggedIn"); // manager sau sef
-        setLoggedIn(!!role); // true dacă există rol
+        const role = await AsyncStorage.getItem("loggedIn");
+        setLoggedIn(!!role);
       } catch (e) {
         setLoggedIn(false);
       } finally {
@@ -22,21 +23,18 @@ export default function Layout() {
     checkLogin();
   }, []);
 
-  if (loading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
-
-  if (!loggedIn) {
-    // dacă nu e logat, redirectăm la login
-
-    // Render the Slot so the index/login page can show instead of a blank screen.
-    // Previously this returned `null` which causes a blank page in web builds.
-    return <Slot />;
-  }
-
-  return <Slot />; // afișăm pagina principală pentru user logat
+  return (
+    <Auth0Provider
+      domain={authConfig.domain}
+      clientId={authConfig.clientId}
+    >
+      {loading ? (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <Text>Loading...</Text>
+        </View>
+      ) : (
+        <Slot />
+      )}
+    </Auth0Provider>
+  );
 }
