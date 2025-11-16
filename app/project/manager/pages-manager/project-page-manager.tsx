@@ -115,180 +115,182 @@ export default function ProjectPageManager(): React.ReactElement {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Wrapper general */}
-      <View style={{ position: "relative" }}>
+      <ScrollView>
+        {/* Wrapper general */}
+        <View style={{ position: "relative" }}>
 
-        {/* HEADER TOOLBAR */}
-        <LinearGradient
-          colors={["#2962FF", "#4FC3F7"]}
-          start={[0, 0]}
-          end={[1, 1]}
-          style={styles.toolbarContainer}
-        >
-          {/* Grup stânga: burger + back */}
-          <View style={{ flexDirection: "row" }}>
-            {/* BUTON BURGER */}
-            <TouchableOpacity
-              style={[styles.iconButton, { marginRight: 8 }]} // padding între burger și back
-              onPress={() => setOpen(true)}
-              activeOpacity={0.8}
-            >
-              <Ionicons name="menu" size={24} color="#fff" />
-            </TouchableOpacity>
+          {/* HEADER TOOLBAR */}
+          <LinearGradient
+            colors={["#2962FF", "#4FC3F7"]}
+            start={[0, 0]}
+            end={[1, 1]}
+            style={styles.toolbarContainer}
+          >
+            {/* Grup stânga: burger + back */}
+            <View style={{ flexDirection: "row" }}>
+              {/* BUTON BURGER */}
+              <TouchableOpacity
+                style={[styles.iconButton, { marginRight: 8 }]} // padding între burger și back
+                onPress={() => setOpen(true)}
+                activeOpacity={0.8}
+              >
+                <Ionicons name="menu" size={24} color="#fff" />
+              </TouchableOpacity>
 
-            {/* BACK */}
+              {/* BACK */}
+              <TouchableOpacity
+                style={styles.iconButton}
+                onPress={() =>
+                  router.push(
+                    "/project/manager/pages-manager/manager-log-page"
+                  )
+                }
+                activeOpacity={0.8}
+              >
+                <Ionicons name="arrow-back" size={18} color="#fff" />
+              </TouchableOpacity>
+            </View>
+
+            {/* Grup dreapta: refresh */}
             <TouchableOpacity
               style={styles.iconButton}
-              onPress={() =>
-                router.push(
-                  "/project/manager/pages-manager/manager-log-page"
-                )
-              }
+              onPress={() => { }}
               activeOpacity={0.8}
             >
-              <Ionicons name="arrow-back" size={18} color="#fff" />
+              <Ionicons name="refresh" size={18} color="#fff" />
             </TouchableOpacity>
-          </View>
+          </LinearGradient>
 
-          {/* Grup dreapta: refresh */}
-          <TouchableOpacity
-            style={styles.iconButton}
-            onPress={() => { }}
-            activeOpacity={0.8}
-          >
-            <Ionicons name="refresh" size={18} color="#fff" />
-          </TouchableOpacity>
-        </LinearGradient>
-
-        {/* OVERLAY PENTRU ÎNCHIDERE BURGER */}
-        {open && (
-          <TouchableOpacity
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "transparent",
-              zIndex: 1,
-            }}
-            activeOpacity={1}
-            onPress={() => setOpen(false)}
-          />
-        )}
-
-        {/* MENIUL BURGER */}
-        {open && <BurgerMenu closeMenu={() => setOpen(false)} />}
-
-        {/* HEADER GRADIENT DE DEDESUBT */}
-        <LinearGradient
-          colors={["#2962FF", "#4FC3F7"]}
-          start={[0, 0]}
-          end={[1, 0]}
-          style={styles.headerGradient}
-        >
-          {/* Titlu + Subtitlu */}
-          <View style={styles.headerRow}>
-            <View style={styles.headerTitleWrap}>
-              <Text style={styles.headerTitle}>{project.name}</Text>
-              <Text style={styles.headerSubtitle}>{project.description}</Text>
-            </View>
-          </View>
-
-          {/* 🔹 KPI-uri */}
-          <View style={styles.headerKpiRow}>
-            <View style={styles.headerKpi}>
-              <Text style={styles.headerKpiLabel}>Total Tasks</Text>
-              <Text style={styles.headerKpiValue}>{tasks.length}</Text>
-            </View>
-            <View style={styles.headerKpi}>
-              <Text style={styles.headerKpiLabel}>In Progress</Text>
-              <Text style={styles.headerKpiValue}>{inProgress.length}</Text>
-            </View>
-            <View style={styles.headerKpi}>
-              <Text style={styles.headerKpiLabel}>Completed</Text>
-              <Text style={styles.headerKpiValue}>{done.length}</Text>
-            </View>
-          </View>
-        </LinearGradient>
-
-        {/* 🔷 CONȚINUTUL PRINCIPAL */}
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-          <OverviewNotesComponent
-            project={project}
-            tasks={tasks}
-            notes={notes}
-            onAddNote={(note) => setNotes((prev) => [note, ...prev])}
-            onEditNote={(noteId, newText) =>
-              setNotes((prev) =>
-                prev.map((n) =>
-                  n.id === noteId ? { ...n, text: newText } : n
-                )
-              )
-            }
-            onToggleNoteChecked={toggleNoteChecked}
-            onAnalyticsPress={() =>
-              router.push("/project/manager/pages-manager/analytics-page")
-            }
-            onOpenTaskSheet={() =>
-              router.push(
-                "/project/manager/pages-manager/microsoft-assistant-page"
-              )
-            }
-          />
-
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>📅 Schedule</Text>
-            <CalendarComponent
-              tasks={tasks}
-              departmentColors={departmentColors}
-              textColorForBg={textColorForBg}
-              styles={styles}
-              onTaskAdded={(newTask) => {
-                const mapped = {
-                  id: `task-${Date.now()}`,
-                  name: newTask.name,
-                  departments: newTask.departments ?? [],
-                  color:
-                    newTask.color ??
-                    departmentColors[newTask.departments?.[0] ?? "General"] ??
-                    "#1b18b6",
-                  deadline: newTask.deadline ?? today.format("YYYY-MM-DD"),
-                  createdAt: today.format("YYYY-MM-DD"),
-                  done: false,
-                  progress: 0,
-                  startDate: today.format("YYYY-MM-DD"),
-                } as Task;
-                setTasks((prev) => [...prev, mapped]);
+          {/* OVERLAY PENTRU ÎNCHIDERE BURGER */}
+          {open && (
+            <TouchableOpacity
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: "transparent",
+                zIndex: 1,
               }}
+              activeOpacity={1}
+              onPress={() => setOpen(false)}
             />
-          </View>
+          )}
 
-          <View style={styles.section}>
-            <StatusCards
-              pastDue={pastDue}
-              inProgress={inProgress}
-              done={done}
-              departmentColors={departmentColors}
-              textColorForBg={textColorForBg}
-              onMarkDone={(taskId) =>
-                setTasks((prev) =>
-                  prev.map((t) =>
-                    t.id === taskId ? { ...t, done: true } : t
+          {/* MENIUL BURGER */}
+          {open && <BurgerMenu closeMenu={() => setOpen(false)} />}
+
+          {/* HEADER GRADIENT DE DEDESUBT */}
+          <LinearGradient
+            colors={["#2962FF", "#4FC3F7"]}
+            start={[0, 0]}
+            end={[1, 0]}
+            style={styles.headerGradient}
+          >
+            {/* Titlu + Subtitlu */}
+            <View style={styles.headerRow}>
+              <View style={styles.headerTitleWrap}>
+                <Text style={styles.headerTitle}>{project.name}</Text>
+                <Text style={styles.headerSubtitle}>{project.description}</Text>
+              </View>
+            </View>
+
+            {/* 🔹 KPI-uri */}
+            <View style={styles.headerKpiRow}>
+              <View style={styles.headerKpi}>
+                <Text style={styles.headerKpiLabel}>Total Tasks</Text>
+                <Text style={styles.headerKpiValue}>{tasks.length}</Text>
+              </View>
+              <View style={styles.headerKpi}>
+                <Text style={styles.headerKpiLabel}>In Progress</Text>
+                <Text style={styles.headerKpiValue}>{inProgress.length}</Text>
+              </View>
+              <View style={styles.headerKpi}>
+                <Text style={styles.headerKpiLabel}>Completed</Text>
+                <Text style={styles.headerKpiValue}>{done.length}</Text>
+              </View>
+            </View>
+          </LinearGradient>
+
+          {/* 🔷 CONȚINUTUL PRINCIPAL */}
+          <ScrollView contentContainerStyle={styles.scrollContainer}>
+            <OverviewNotesComponent
+              project={project}
+              tasks={tasks}
+              notes={notes}
+              onAddNote={(note) => setNotes((prev) => [note, ...prev])}
+              onEditNote={(noteId, newText) =>
+                setNotes((prev) =>
+                  prev.map((n) =>
+                    n.id === noteId ? { ...n, text: newText } : n
                   )
                 )
               }
-              onEditTask={(taskId) => {
-                const idx = tasks.findIndex((t) => t.id === taskId);
-                if (idx >= 0) {
-                  // edit logic here
-                  // edit logic here
-                }
-              }}
+              onToggleNoteChecked={toggleNoteChecked}
+              onAnalyticsPress={() =>
+                router.push("/project/manager/pages-manager/analytics-page")
+              }
+              onOpenTaskSheet={() =>
+                router.push(
+                  "/project/manager/pages-manager/microsoft-assistant-page"
+                )
+              }
             />
-          </View>
-        </ScrollView>
-      </View>
+
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>📅 Schedule</Text>
+              <CalendarComponent
+                tasks={tasks}
+                departmentColors={departmentColors}
+                textColorForBg={textColorForBg}
+                styles={styles}
+                onTaskAdded={(newTask) => {
+                  const mapped = {
+                    id: `task-${Date.now()}`,
+                    name: newTask.name,
+                    departments: newTask.departments ?? [],
+                    color:
+                      newTask.color ??
+                      departmentColors[newTask.departments?.[0] ?? "General"] ??
+                      "#1b18b6",
+                    deadline: newTask.deadline ?? today.format("YYYY-MM-DD"),
+                    createdAt: today.format("YYYY-MM-DD"),
+                    done: false,
+                    progress: 0,
+                    startDate: today.format("YYYY-MM-DD"),
+                  } as Task;
+                  setTasks((prev) => [...prev, mapped]);
+                }}
+              />
+            </View>
+
+            <View style={styles.section}>
+              <StatusCards
+                pastDue={pastDue}
+                inProgress={inProgress}
+                done={done}
+                departmentColors={departmentColors}
+                textColorForBg={textColorForBg}
+                onMarkDone={(taskId) =>
+                  setTasks((prev) =>
+                    prev.map((t) =>
+                      t.id === taskId ? { ...t, done: true } : t
+                    )
+                  )
+                }
+                onEditTask={(taskId) => {
+                  const idx = tasks.findIndex((t) => t.id === taskId);
+                  if (idx >= 0) {
+                    // edit logic here
+                    // edit logic here
+                  }
+                }}
+              />
+            </View>
+          </ScrollView>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
