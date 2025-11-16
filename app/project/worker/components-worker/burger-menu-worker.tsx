@@ -1,7 +1,7 @@
-import { router } from "expo-router";
 import React from "react";
+import { router, useRouter } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
+import { useAuth0 } from "react-native-auth0";
 type BurgerMenuProps = {
   closeMenu?: () => void; // <-- adăugăm prop-ul
 };
@@ -11,7 +11,18 @@ export default function BurgerMenu({ closeMenu }: BurgerMenuProps) {
     router.push(path);
     if (closeMenu) closeMenu(); // închidem meniul după navigare
   };
-
+   const { authorize, getCredentials, clearSession } = useAuth0();
+      const router = useRouter(); // Next.js routing
+  const onLogout = async () => {
+    console.log("Logging out...");
+    try {
+      await clearSession();
+     // handleNavigation("/project/worker/pages-worker/worker-log-page");
+      console.log("Logged out successfully");
+    } catch (e) {
+      console.log("Logout error:", e);
+    }
+  };
   return (
     <View style={styles.menu}>
       <TouchableOpacity onPress={() => handleNavigation("/project/worker/pages-worker/user-profile-worker")}>
@@ -30,7 +41,7 @@ export default function BurgerMenu({ closeMenu }: BurgerMenuProps) {
         <Text style={styles.menuItem}>Chat-Bot</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => handleNavigation("/")}>
+      <TouchableOpacity onPress={onLogout}>
         <Text style={[styles.menuItem, { color: "red" }]}>Logout</Text>
       </TouchableOpacity>
     </View>

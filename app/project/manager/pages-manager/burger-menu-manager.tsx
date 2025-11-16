@@ -1,8 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, useRouter } from "expo-router";
 import React from "react";
+import { useAuth0 } from "react-native-auth0";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
 type BurgerMenuProps = {
   closeMenu?: () => void;
 };
@@ -12,7 +12,19 @@ export default function BurgerMenu({ closeMenu }: BurgerMenuProps) {
     router.push(path);
     closeMenu?.();
   };
-
+    const { authorize, getCredentials, clearSession } = useAuth0();
+    const router = useRouter(); // Next.js routing
+  
+const onLogout = async () => {
+    console.log("Logging out...");
+    try {
+      await clearSession();
+     // handleNavigation("/project/worker/pages-worker/worker-log-page");
+      console.log("Logged out successfully");
+    } catch (e) {
+      console.log("Logout error:", e);
+    }
+  };
   return (
     <View style={styles.menuWrapper}>
       <View style={styles.menuCard}>
@@ -34,7 +46,7 @@ export default function BurgerMenu({ closeMenu }: BurgerMenuProps) {
         <MenuItem
           icon="chatbubble-ellipses-outline"
           label="AI Chatbot"
-          onPress={() => handleNavigation("./assistant-page-manager")}
+          onPress={() => handleNavigation("/project/manager/pages-manager/assistant-page-manager")}
         />
 
         <View style={styles.separator} />
@@ -43,7 +55,7 @@ export default function BurgerMenu({ closeMenu }: BurgerMenuProps) {
           icon="log-out-outline"
           label="Logout"
           labelColor="#E53935"
-          onPress={() => handleNavigation("/")}
+          onPress={onLogout}
         />
       </View>
     </View>
